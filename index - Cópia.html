@@ -3,14 +3,13 @@
         <title>Maze</title>
         <style>
             * { padding: 0; margin: 0; background: rgb(255, 255, 255); }
-            canvas { background: #eee; display: inline-block; margin: 0 auto; }
+            /* canvas { background: #eee; display: inline-block; margin: 0 auto; } */
+            canvas { background: #eee; display: block; margin: 10 auto; }
             div { display: block;}
         </style>
     </head>
     <body>
-        <canvas class="mazeManual"></canvas>
-        <canvas class="mazeRecursive"></canvas>
-        <canvas class="mazeAI"></canvas>
+        <canvas class="maze"></canvas>
         <div>
             <label>Size:</label> <input type="text" id="size" name="size" size="4" value="600">
             <label >Rows:</label> <input type="text" id="rows" name="rows" size="2" value="10">
