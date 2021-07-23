@@ -1,8 +1,13 @@
 let buttonCreate = document.getElementById("create");
 buttonCreate.addEventListener("click", createMaze);
 
-let buttonReset = document.getElementById("reset");
+let buttonStart = document.getElementById("start");
+buttonStart.addEventListener("click", startMaze);
+buttonStart.disabled = true;
+
+ let buttonReset = document.getElementById("reset");
 buttonReset.addEventListener("click", reset);
+buttonReset.disabled = true;
 
 let canvasManual = document.querySelector('.mazeManual');
 let canvasRecursive = document.querySelector('.mazeRecursive');
@@ -12,8 +17,19 @@ let ctxManual = canvasManual.getContext('2d');
 let ctxRecursive = canvasRecursive.getContext('2d');
 let ctxAI = canvasAI.getContext('2d');
 
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+
 let create = false;
 let current;
+
+var posX = 0
+var posY = 0;
+var upPressed = false;
+var downPressed = false;
+var rightPressed = false;
+var leftPressed = false;
+let currentManual;
 
 class Cell {
     constructor(rowNum, colNum, parentGrid, parentSize){
@@ -30,6 +46,13 @@ class Cell {
             bottomWall : true,
             leftWall : true
         };
+        this.trailManual = 150;
+
+        //Descarte (acho que não vou precisar)
+        this.pilxesTop = 0;
+        this.pilxesBottom = 0;
+        this.pilxesRight = 0;
+        this.pilxesLeft = 0;
     }
 
     checkNeighbours(){
@@ -75,6 +98,8 @@ class Cell {
         ctxAI.lineTo(x + size / columns, y);
         ctxAI.stroke();
         ctxAI.closePath();
+
+        this.pilxesTop = y;
     }
 
     drawRightWall(x, y, size, columns, rows) {
@@ -96,6 +121,8 @@ class Cell {
         ctxAI.lineTo(x + size / columns, y + size / rows);
         ctxAI.stroke();
         ctxAI.closePath();
+
+        this.pilxesRight = (x + size / columns);
     }
 
     drawBottomWall(x, y, size, columns, rows) {
@@ -117,6 +144,8 @@ class Cell {
         ctxAI.lineTo(x + size / columns, y + size / rows);
         ctxAI.stroke();
         ctxAI.closePath();
+
+        this.pilxesBottom = (y + size / rows);
     }
 
     drawLeftWall(x, y, size, columns, rows) {
@@ -138,6 +167,8 @@ class Cell {
         ctxAI.lineTo(x, y + size / rows);
         ctxAI.stroke();
         ctxAI.closePath();
+
+        this.pilxesLeft = x;
     }
 
     highlight(columns, hidden){
@@ -167,6 +198,20 @@ class Cell {
                 y, 
                 this.parentSize / columns - 3, 
                 this.parentSize / columns - 3
+            );
+        }        
+    }
+
+    manual(columns, hidden){
+        if(!hidden){
+            let x = (this.colNum * this.parentSize) / columns + 1;
+            let y = (this.rowNum * this.parentSize) / columns + 1;
+            ctxManual.fillStyle = '#FFD700';
+            ctxManual.fillRect(
+                x, 
+                y, 
+                this.parentSize / columns - 2, 
+                this.parentSize / columns - 2
             );
         }        
     }
@@ -227,6 +272,7 @@ class Maze {
         this.columns = columns;
         this.grid = [];
         this.stack = [];
+        this.start = false;
     }
 
     setup() {
@@ -243,10 +289,15 @@ class Maze {
         current = this.grid[0][0];
     }
 
+    run() {
+         this.start = true;
+         currentManual = this.grid[posX][posY];
+    }
+
     reset() {
-        ctxManual.clearRect(0, 0, canvas.width, canvas.height);
-        ctxRecursive.clearRect(0, 0, canvas.width, canvas.height);
-        ctxAI.clearRect(0, 0, canvas.width, canvas.height);
+        ctxManual.clearRect(0, 0, canvasManual.width, canvasManual.height);
+        ctxRecursive.clearRect(0, 0, canvasRecursive.width, canvasRecursive.height);
+        ctxAI.clearRect(0, 0, canvasAI.width, canvasAI.height);
         for(let r = 0; r < this.rows; r++){
             for(let c = 0; c < this.columns; c++){
                 let grid = this.grid;
@@ -301,21 +352,73 @@ class Maze {
             if(this.stack.length == 0){
                 current.highlight(this.columns, true);
                 create = true;
+                buttonStart.disabled = false;
+                buttonReset.disabled = false;
                 //return;
             }
         } else {
-            //console.log('Maze criado, toca o terror agora.');
+            ctxManual.clearRect(0, 0, canvasManual.width, canvasManual.height);
+            ctxRecursive.clearRect(0, 0, canvasRecursive.width, canvasRecursive.height);
+            ctxAI.clearRect(0, 0, canvasAI.width, canvasAI.height);
             for(let r = 0; r < this.rows; r++){
                 for(let c = 0; c < this.columns; c++){
                     let grid = this.grid;
                     grid[r][c].show(this.size, this.rows, this.columns);
                 }
             }
+            if(this.start) {
+                currentManual.manual(this.columns, false);
+                moveManual(this.grid);
+            }
         }    
         
         window.requestAnimationFrame(() => {
             this.draw();
         });
+    }
+}
+
+function moveManual(grid) {
+    if(upPressed && !currentManual.walls.topWall){
+        posX -= 1;
+        upPressed = false;
+    }
+    if(leftPressed && !currentManual.walls.leftWall){
+        posY -= 1;
+        leftPressed = false;
+    }
+    if(rightPressed && !currentManual.walls.rightWall){
+        posY += 1;
+        rightPressed = false;
+    }
+    if(downPressed && !currentManual.walls.bottomWall){
+        posX += 1;
+        downPressed = false;
+    }
+    currentManual = grid[posX][posY];
+}
+
+function keyDownHandler(e) {
+    if(e.key == "Up" || e.key == "ArrowUp") {
+        upPressed = true;
+    } else if(e.key == "Down" || e.key == "ArrowDown") {
+        downPressed = true;
+    } else if(e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = true;
+    } else if(e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = true;
+    }
+}
+
+function keyUpHandler(e) {
+    if(e.key == "Up" || e.key == "ArrowUp") {
+        upPressed = false;
+    } else if(e.key == "Down" || e.key == "ArrowDown") {
+        downPressed = false;
+    } else if(e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = false;
+    } else if(e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = false;
     }
 }
 
@@ -329,6 +432,10 @@ function createMaze() {
     newMaze = new Maze(textSize.value, textRows.value, textColumns.value);
     newMaze.setup();
     newMaze.draw();
+}
+
+function startMaze() {
+    newMaze.run();
 }
 
 function reset() {
