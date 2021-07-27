@@ -4,7 +4,6 @@
     </head>
     <body>
         <h1>Dimension</h1>
-        <p>Blá bla bla bla bla.</p>
         <p>
             <label>Size:</label> <input type="text" id="size" name="size" size="4" value="400">
             <label>Rows:</label> <input type="text" id="rows" name="rows" size="2" value="5">
@@ -13,15 +12,25 @@
         <p><canvas class="maze"></canvas></p>
         <p>
             <canvas class="play-maze"></canvas>
-            <label id="label-play-maze">Total de movimentos: 0;</label>
+        </p>
+        <p>
+            <canvas class="recursive-maze"></canvas>
+        </p>
+        <p>
+            <label id="label-play-maze">Movimentos: 0;</label>
         </p>
         <p>
             <button type="button" id="create">Create Maze</button>
             <button type="button" id="play">Play Maze</button>
+            <button type="button" id="recursive">Recursive Maze</button>
+            <button type="button" id="ai">AI Maze</button>
         </p>
     </body>
 </html>
+<script src="operation.js"></script>
 <script src="cell.js"></script>
 <script src="cell-player.js"></script>
-<script src="maze-recursive.js"></script>
+<script src="cell-recursive.js"></script>
+<script src="maze.js"></script>
 <script src="maze-player.js"></script>
+<script src="maze-recursive.js"></script>

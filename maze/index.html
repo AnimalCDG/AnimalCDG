@@ -1,0 +1,56 @@
+<html>
+    <head>
+        <title>Maze Vs</title>
+        <style>
+         /* .line {
+            display: inline-block;
+          }
+
+          .line p {
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+          } */
+          .center {
+            margin: auto;
+            width: 50%;
+            padding: 10px;
+            text-align: center;
+          }
+        </style>
+    </head>
+    <body>
+      <div class="center">
+        <h1>Maze Projects</h1>
+        <p>
+          <label>Size:</label> <input type="text" id="size" name="size" size="4" value="400">
+          <label>Rows:</label> <input type="text" id="rows" name="rows" size="2" value="15">
+          <label>Columns:</label> <input type="text" id="columns" name="columns" size="2" value="15">
+          <button type="button" id="maze-recursive">Recursive</button>
+          <button type="button" id="maze-iterative">Iterative</button>
+          <button type="button" id="back">Back</button>
+        </p>
+        <div class="line">
+          <div class="line">
+            <canvas class="maze"></canvas>
+            <p>
+              <label id="label-play-maze">Movimentos: 0;</label>
+            </p>
+            <p>
+              <button type="button" id="play">Solve - Playing</button>
+              <button type="button" id="recursive">Solve - Recursive</button>
+            </p>
+          </di>
+        </div>
+      </div>
+      <script src="../js/main-maze.js"></script>
+      <script src="../js/cell.js"></script>
+      <script src="../js/maze.js"></script>
+      <script src="../js/cell-player.js"></script>
+      <script src="../js/maze-player.js"></script>
+      <script src="../js/cell-recursive.js"></script>
+      <script src="../js/maze-recursive.js"></script>
+    </body>
+</html>

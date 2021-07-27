@@ -6,7 +6,7 @@ var downPressed = false;
 var rightPressed = false;
 var leftPressed = false;
 
-let currentManual;
+let currentPlayer;
 
 class MazePlay {
     constructor(size, rows, columns) {
@@ -22,6 +22,7 @@ class MazePlay {
     }
 
     setup() {
+        currentPlayer = null;
         for(let r = 0; r < this.rows; r++){
             let row = [];
             for(let c = 0; c < this.columns; c++){
@@ -41,54 +42,53 @@ class MazePlay {
             }
             this.grid.push(row);
         }
-        currentManual = this.grid[this.posX][this.posY];
+        currentPlayer = this.grid[this.posX][this.posY];
     }
 
     play() {
-        canvasPlayer.width = this.size;
-        canvasPlayer.height = this.size;
-        canvasPlayer.style.background = 'white';
-        ctxPlayer.clearRect(0, 0, canvasPlayer.width, canvasPlayer.height);
+        canvas.style.background = 'white';
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         for(let r = 0; r < this.rows; r++){
             for(let c = 0; c < this.columns; c++){
                 let grid = this.grid;
                 grid[r][c].show(this.size, this.rows, this.columns);
             }
         }
-        
-        currentManual.play(this.columns, false);
-        if(currentManual.exit){
-            alert("Saiu após "+this.countMove+" movimentos.");
+        currentPlayer.play(this.columns, false);
+        if(currentPlayer.exit){
+            alert("Found the exit with "+this.countMove+" moves.");
+            btnPlay.disabled = false;
+            btnRecursive.disabled = false;
             return;
         }
 
-        if(upPressed && !currentManual.walls.topWall){
+        if(upPressed && !currentPlayer.walls.topWall){
             upPressed = false;
-            currentManual.trail();
+            currentPlayer.trail();
             this.posX -= 1;
             this.countMove += 1;            
         }
-        if(leftPressed && !currentManual.walls.leftWall){
+        if(leftPressed && !currentPlayer.walls.leftWall){
             leftPressed = false;
-            currentManual.trail();
+            currentPlayer.trail();
             this.posY -= 1;
             this.countMove += 1;            
         }
-        if(rightPressed && !currentManual.walls.rightWall){
+        if(rightPressed && !currentPlayer.walls.rightWall){
             rightPressed = false;
-            currentManual.trail();
+            currentPlayer.trail();
             this.posY += 1;
             this.countMove += 1;            
         }
-        if(downPressed && !currentManual.walls.bottomWall){
+        if(downPressed && !currentPlayer.walls.bottomWall){
             downPressed = false;
-            currentManual.trail();
+            currentPlayer.trail();
             this.posX += 1;
             this.countMove += 1;            
         }
-        currentManual = this.grid[this.posX][this.posY];
-        currentManual.visited = true;
-        labelPlay.innerHTML = 'Total de movimentos: '+this.countMove+';';
+        currentPlayer = this.grid[this.posX][this.posY];
+        currentPlayer.visited = true;
+        labelPlay.innerHTML = 'Movimentos: '+this.countMove+';';
         window.requestAnimationFrame(() => {
             this.play();
         });
